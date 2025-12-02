@@ -14,6 +14,7 @@ if ($page < 1) {
 
 $search_name = isset($_GET['name']) ? trim($_GET['name']) : '';
 $gender      = isset($_GET['gender']) ? $_GET['gender'] : 'All';
+$age_filter  = isset($_GET['age']) && $_GET['age'] !== '' ? (int)$_GET['age'] : null;
 
 // Build WHERE conditions
 $conditions = '1=1';
@@ -26,6 +27,10 @@ if ($search_name !== '') {
 if ($gender === 'Male' || $gender === 'Female') {
     $safe_gender = mysqli_real_escape_string($connect, $gender);
     $conditions .= " AND p.gender = '$safe_gender'";
+}
+
+if ($age_filter !== null) {
+    $conditions .= ' AND p.age = ' . $age_filter;
 }
 
 // Count total patients for pagination
@@ -92,4 +97,10 @@ $patients_page       = $page;
 $patients_per_page   = $per_page;
 $patients_total      = $total_patients;
 $patients_totalpages = $total_pages;
+
+// Locations list for Add Patient form
+$all_locations = mysqli_query(
+    $connect,
+    "SELECT location_id, city, region, country FROM location ORDER BY location_id ASC"
+);
 

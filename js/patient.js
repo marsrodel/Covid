@@ -6,9 +6,46 @@ document.addEventListener('DOMContentLoaded', function () {
   const filterForm = document.querySelector('.patients-filters');
   const searchInput = document.getElementById('searchName');
   const genderSelect = document.getElementById('genderFilter');
+  const ageInput = document.getElementById('ageFilter');
+  const openAddBtn = document.getElementById('openAddPatientBtn');
+  const addModal = document.getElementById('addPatientModal');
+  const addBackdrop = document.getElementById('addPatientBackdrop');
+  const addClose = document.getElementById('addPatientClose');
+  const addCancel = document.getElementById('addPatientCancel');
 
   if (!patientsCard) {
     return;
+  }
+
+  function openAddModal() {
+    if (!addModal) return;
+    addModal.classList.add('show');
+    addModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeAddModal() {
+    if (!addModal) return;
+    addModal.classList.remove('show');
+    addModal.setAttribute('aria-hidden', 'true');
+  }
+
+  if (openAddBtn) {
+    openAddBtn.addEventListener('click', openAddModal);
+  }
+
+  if (addBackdrop) {
+    addBackdrop.addEventListener('click', closeAddModal);
+  }
+
+  if (addClose) {
+    addClose.addEventListener('click', closeAddModal);
+  }
+
+  if (addCancel) {
+    addCancel.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeAddModal();
+    });
   }
 
   // Prevent form submit (we use live filtering instead)
@@ -25,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const nameVal = searchInput ? searchInput.value.trim() : '';
     const genderVal = genderSelect ? genderSelect.value : 'All';
+    const ageVal = ageInput ? ageInput.value.trim() : '';
 
     if (nameVal) {
       url.searchParams.set('name', nameVal);
@@ -36,6 +74,12 @@ document.addEventListener('DOMContentLoaded', function () {
       url.searchParams.set('gender', genderVal);
     } else {
       url.searchParams.delete('gender');
+    }
+
+    if (ageVal) {
+      url.searchParams.set('age', ageVal);
+    } else {
+      url.searchParams.delete('age');
     }
 
     return url.toString();
@@ -116,6 +160,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (genderSelect) {
     genderSelect.addEventListener('change', triggerFilterUpdate);
+  }
+
+  if (ageInput) {
+    ageInput.addEventListener('input', triggerFilterUpdate);
   }
 });
 
