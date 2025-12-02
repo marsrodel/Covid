@@ -36,6 +36,7 @@ require_once __DIR__ . '/../server/patient_queries.php';
         <p class="hero-badge">Browse • Patients</p>
         <h1 class="hero-title">Demographics and locations of patients</h1>
         <p class="hero-subtitle">Browse patient demographics and locations with pagination.</p>
+        <p class="hero-subtitle">Total Patients: <?php echo number_format($patients_total_global); ?></p>
         <div class="hero-actions">
           <a href="index.php" class="hero-btn hero-btn-outline">Back to Dashboard</a>
           <button type="button" class="hero-btn hero-btn-primary" id="openAddPatientBtn">Add Patient</button>
@@ -56,7 +57,8 @@ require_once __DIR__ . '/../server/patient_queries.php';
             ×
           </button>
         </header>
-        <form class="patient-modal-body" method="post" action="../server/add_patient_queries.php">
+        <form class="patient-modal-body" method="post" action="../server/add_patient_queries.php" id="patientForm">
+          <input type="hidden" name="patient_id" id="apPatientId" value="">
           <div class="patient-modal-grid">
             <div class="patient-field-group">
               <label for="apFirstName" class="patients-filter-label">First name</label>
@@ -176,8 +178,17 @@ require_once __DIR__ . '/../server/patient_queries.php';
                 <td><?php echo htmlspecialchars($p['country']); ?></td>
                 <td>
                   <div class="patients-actions">
-                    <button type="button" class="patients-action-btn patients-action-view">Edit</button>
-                    <button type="button" class="patients-action-btn patients-action-edit">Delete</button>
+                    <button
+                      type="button"
+                      class="patients-action-btn patients-action-edit"
+                      data-patient-id="<?php echo htmlspecialchars($p['patient_id']); ?>"
+                      data-first-name="<?php echo htmlspecialchars($p['first_name']); ?>"
+                      data-last-name="<?php echo htmlspecialchars($p['last_name']); ?>"
+                      data-gender="<?php echo htmlspecialchars($p['gender']); ?>"
+                      data-age="<?php echo htmlspecialchars($p['age']); ?>"
+                      data-location-id="<?php echo htmlspecialchars($p['location_id'] ?? ''); ?>"
+                    >Edit</button>
+                    <button type="button" class="patients-action-btn patients-action-delete">Delete</button>
                   </div>
                 </td>
               </tr>

@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const addBackdrop = document.getElementById('addPatientBackdrop');
   const addClose = document.getElementById('addPatientClose');
   const addCancel = document.getElementById('addPatientCancel');
+  const patientForm = document.getElementById('patientForm');
+  const apId = document.getElementById('apPatientId');
+  const apFirst = document.getElementById('apFirstName');
+  const apLast = document.getElementById('apLastName');
+  const apAge = document.getElementById('apAge');
+  const apGender = document.getElementById('apGender');
+  const apLocation = document.getElementById('apLocation');
 
   if (!patientsCard) {
     return;
@@ -19,6 +26,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function openAddModal() {
     if (!addModal) return;
+    // Reset form to Add mode
+    if (patientForm) {
+      patientForm.action = '../server/add_patient_queries.php';
+    }
+    if (apId) apId.value = '';
+    if (apFirst) apFirst.value = '';
+    if (apLast) apLast.value = '';
+    if (apAge) apAge.value = '';
+    if (apGender) apGender.value = '';
+    if (apLocation) apLocation.value = '';
     addModal.classList.add('show');
     addModal.setAttribute('aria-hidden', 'false');
   }
@@ -45,6 +62,38 @@ document.addEventListener('DOMContentLoaded', function () {
     addCancel.addEventListener('click', function (e) {
       e.preventDefault();
       closeAddModal();
+    });
+  }
+
+  // Submit Add/Edit Patient form via AJAX so the page does not fully reload
+  if (patientForm) {
+    patientForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const actionUrl = patientForm.action;
+      const formData = new FormData(patientForm);
+
+      fetch(actionUrl, {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin',
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          // After successful save, refresh patients list on current page
+          const current = new URL(window.location.href);
+          const currentPage = parseInt(current.searchParams.get('page') || '1', 10);
+          const url = buildPatientsUrl(currentPage);
+          closeAddModal();
+          loadPatients(url);
+        })
+        .catch(function (err) {
+          console.error('Failed to save patient:', err);
+          // Fallback: if AJAX fails, submit normally
+          patientForm.submit();
+        });
     });
   }
 
@@ -130,6 +179,31 @@ document.addEventListener('DOMContentLoaded', function () {
     const url = buildPatientsUrl(1); // always reset to page 1 on filter change
     loadPatients(url);
   }, 350);
+
+  // Edit button handler (event delegation so it works after AJAX updates)
+  document.addEventListener('click', function (event) {
+    const editBtn = event.target.closest('.patients-action-edit');
+    if (!editBtn || !addModal || !patientForm) return;
+
+    const id = editBtn.getAttribute('data-patient-id');
+    const first = editBtn.getAttribute('data-first-name') || '';
+    const last = editBtn.getAttribute('data-last-name') || '';
+    const gender = editBtn.getAttribute('data-gender') || '';
+    const age = editBtn.getAttribute('data-age') || '';
+    const locId = editBtn.getAttribute('data-location-id') || '';
+
+    patientForm.action = '../server/edit_patients.php';
+
+    if (apId) apId.value = id || '';
+    if (apFirst) apFirst.value = first;
+    if (apLast) apLast.value = last;
+    if (apAge) apAge.value = age;
+    if (apGender) apGender.value = gender;
+    if (apLocation) apLocation.value = locId;
+
+    addModal.classList.add('show');
+    addModal.setAttribute('aria-hidden', 'false');
+  });
 
   // Intercept clicks on pagination links inside the patients card
   document.addEventListener('click', function (event) {

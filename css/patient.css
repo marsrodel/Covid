@@ -100,25 +100,33 @@
 
 .patients-pagination {
   display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.6rem 1rem 0.1rem;
-  font-size: 0.82rem;
   justify-content: center;
-  width: 100%;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.65rem 0.3rem 0.1rem;
+}
+
+.patients-page-link,
+.patients-page-ellipsis {
+  font-size: 0.8rem;
 }
 
 .patients-page-link {
-  color: #0f766e;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--text-muted);
   text-decoration: none;
 }
 
 .patients-page-link:hover {
-  text-decoration: underline;
+  border-color: rgba(148, 163, 184, 0.8);
 }
 
 .patients-page-current {
-  font-weight: 600;
+  background: linear-gradient(135deg, #22d3ee, #2dd4bf);
+  color: #ffffff;
+  border-color: transparent;
 }
 
 .patients-page-disabled {

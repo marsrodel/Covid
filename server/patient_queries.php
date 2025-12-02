@@ -6,6 +6,16 @@ require_once __DIR__ . '/db.php';
 
 $per_page = 50;
 
+// Global total patients (for hero), independent of filters
+$patients_total_global = 0;
+$global_patients_sql = "SELECT COUNT(*) AS total_all FROM patient";
+$global_patients_result = mysqli_query($connect, $global_patients_sql);
+
+if ($global_patients_result && mysqli_num_rows($global_patients_result) > 0) {
+    $global_row = mysqli_fetch_assoc($global_patients_result);
+    $patients_total_global = (int)$global_row['total_all'];
+}
+
 // Read filters from query string
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) {
@@ -66,6 +76,7 @@ $data_sql = "SELECT
     p.last_name,
     p.gender,
     p.age,
+    p.location_id,
     l.city,
     l.region,
     l.country
@@ -88,6 +99,7 @@ if ($data_result) {
             'city'       => $row['city'],
             'region'     => $row['region'],
             'country'    => $row['country'],
+            'location_id'=> isset($row['location_id']) ? (int)$row['location_id'] : null,
         ];
     }
 }
