@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const acSeverity = document.getElementById('acSeverity');
   const acVaccine = document.getElementById('acVaccine');
   const acLab = document.getElementById('acLab');
+  const caseFormError = document.getElementById('caseFormError');
 
   // Delete confirmation modal elements
   const deleteCaseModal = document.getElementById('deleteCaseModal');
@@ -36,6 +37,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (caseForm) {
       caseForm.reset();
       caseForm.action = '../server/add_cases.php';
+    }
+    if (caseFormError) {
+      caseFormError.textContent = '';
+      caseFormError.classList.remove('show');
     }
     addCaseModal.classList.add('show');
     addCaseModal.setAttribute('aria-hidden', 'false');
@@ -98,11 +103,41 @@ document.addEventListener('DOMContentLoaded', function () {
         method: 'POST',
         body: formData,
         credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
       })
         .then(function (response) {
+          const contentType = response.headers.get('Content-Type') || '';
+
+          if (contentType.indexOf('application/json') !== -1) {
+            return response.json().then(function (data) {
+              return { httpOk: response.ok, data: data };
+            });
+          }
+
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
+
+          return { httpOk: true, data: null };
+        })
+        .then(function (result) {
+          if (result.data && result.data.success === false) {
+            if (caseFormError) {
+              caseFormError.textContent = result.data.error || 'Unable to save case.';
+              caseFormError.classList.add('show');
+            } else {
+              alert(result.data.error || 'Unable to save case.');
+            }
+            return;
+          }
+
+          if (caseFormError) {
+            caseFormError.textContent = '';
+            caseFormError.classList.remove('show');
+          }
+
           const current = new URL(window.location.href);
           const currentPage = parseInt(current.searchParams.get('page') || '1', 10);
           const url = buildCasesUrl(currentPage);
@@ -138,7 +173,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (acSeverity) acSeverity.value = severity;
     if (acVaccine) acVaccine.value = vaccineId;
     if (acLab) acLab.value = labId;
-
+    if (caseFormError) {
+      caseFormError.textContent = '';
+      caseFormError.classList.remove('show');
+    }
     addCaseModal.classList.add('show');
     addCaseModal.setAttribute('aria-hidden', 'false');
   });

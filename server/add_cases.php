@@ -34,8 +34,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $allowed_results   = ['Positive', 'Negative'];
     $allowed_severity  = ['Mild', 'Moderate', 'Severe', 'Critical'];
 
+    $is_ajax = isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false;
+
     if ($test_date === '' || $patient_id <= 0 || !in_array($result, $allowed_results, true) || !in_array($severity, $allowed_severity, true) || $vaccine_id <= 0 || $lab_id <= 0) {
+        if ($is_ajax) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Please fill in all required fields with valid values.',
+            ]);
+            exit;
+        }
+
         header('Location: ../views/cases.php?add_error=invalid');
+        exit;
+    }
+
+    // Ensure patient_id exists in the patient table
+    $patient_exists = false;
+    $check_stmt = mysqli_prepare($connect, 'SELECT 1 FROM patient WHERE patient_id = ? LIMIT 1');
+    if ($check_stmt) {
+        mysqli_stmt_bind_param($check_stmt, 'i', $patient_id);
+        if (mysqli_stmt_execute($check_stmt)) {
+            mysqli_stmt_store_result($check_stmt);
+            $patient_exists = mysqli_stmt_num_rows($check_stmt) > 0;
+        }
+        mysqli_stmt_close($check_stmt);
+    }
+
+    if (!$patient_exists) {
+        if ($is_ajax) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error'   => 'The Patient ID you entered does not exist. Please use an existing Patient ID from the Patients page.',
+            ]);
+            exit;
+        }
+
+        header('Location: ../views/cases.php?add_error=no_patient');
         exit;
     }
 
@@ -69,10 +108,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_commit($connect);
         mysqli_stmt_close($stmt);
 
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+            exit;
+        }
+
         header('Location: ../views/cases.php?added=1');
         exit;
     } catch (Exception $e) {
         mysqli_rollback($connect);
+        if ($is_ajax) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Something went wrong while saving the case. Please try again.',
+            ]);
+            exit;
+        }
+
         header('Location: ../views/cases.php?add_error=tx');
         exit;
     }

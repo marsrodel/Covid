@@ -257,6 +257,17 @@
   border: 1px solid rgba(15, 118, 110, 0.3);
 }
 
+.case-form-error {
+  display: none;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #b91c1c; /* red error text */
+}
+
+.case-form-error.show {
+  display: block;
+}
+
 /* Delete Case confirmation modal */
 
 .case-confirm-modal {

@@ -77,6 +77,7 @@ require_once __DIR__ . '/../server/cases_queries.php';
         </header>
         <form class="case-modal-body" method="post" action="../server/add_cases.php" id="caseForm">
           <input type="hidden" name="case_id" id="acCaseId" value="">
+          <div id="caseFormError" class="case-form-error" aria-live="polite"></div>
           <div class="case-modal-grid">
             <div class="case-field-group">
               <label for="acTestDate" class="cases-filter-label">Test date</label>
