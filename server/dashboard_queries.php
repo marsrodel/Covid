@@ -160,7 +160,7 @@ foreach ($monthly_cases as $year => $months) {
 
 $labs_result     = mysqli_query($connect, "SELECT lab_name, city, capacity_per_day FROM testing_lab ORDER BY lab_id ASC");
 $vaccines_result = mysqli_query($connect, "SELECT vaccine_name, manufacturer, doses_required FROM vaccine ORDER BY vaccine_id ASC");
-$locations_result = mysqli_query($connect, "SELECT city, region, country FROM location ORDER BY location_id ASC");
+$locations_result = mysqli_query($connect, "SELECT location_id, city, region, country FROM location ORDER BY location_id ASC");
 
 // ----------------------------------------------
 // 4. Severity distribution by result

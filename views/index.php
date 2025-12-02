@@ -18,7 +18,9 @@ require_once __DIR__ . '/../server/dashboard_queries.php';
   <header class="header">
     <div class="container header-inner">
       <div class="brand">
-        <div class="brand-mark">CA</div>
+        <div class="brand-mark">
+          <img src="../assets/covid_icon.png" alt="COVID Analytics logo">
+        </div>
         <div class="brand-text">
           <span class="brand-title">COVID Analytics</span>
           <span class="brand-subtitle">IT 108 · COVID-19 Dataset</span>
@@ -215,6 +217,7 @@ require_once __DIR__ . '/../server/dashboard_queries.php';
           <table class="growth-table">
             <thead>
               <tr>
+                <th>Location ID</th>
                 <th>City</th>
                 <th>Region</th>
                 <th>Country</th>
@@ -224,6 +227,7 @@ require_once __DIR__ . '/../server/dashboard_queries.php';
 <?php if ($locations_result && mysqli_num_rows($locations_result) > 0): ?>
 <?php while ($loc = mysqli_fetch_assoc($locations_result)): ?>
               <tr>
+                <td><?php echo htmlspecialchars($loc['location_id']); ?></td>
                 <td><?php echo htmlspecialchars($loc['city']); ?></td>
                 <td><?php echo htmlspecialchars($loc['region']); ?></td>
                 <td><?php echo htmlspecialchars($loc['country']); ?></td>
