@@ -1,19 +1,7 @@
 <?php
-// Handles Delete Case requests.
-// Deletes a row from covid_cases inside a transaction.
-//
-// Trigger definition (run once in MySQL, not on every request):
-//
-// DELIMITER $$
-//
-// CREATE TRIGGER trg_delete_cases_for_patient
-//   AFTER DELETE ON patient
-//   FOR EACH ROW
-// BEGIN
-//   DELETE FROM covid_cases WHERE patient_id = OLD.patient_id;
-// END$$
-//
-// DELIMITER ;
+// Handles Delete Patient requests.
+// Deletes a row from patient inside a transaction.
+// A database trigger (defined separately) will delete related covid_cases rows.
 
 require_once __DIR__ . '/db.php';
 
@@ -21,16 +9,16 @@ require_once __DIR__ . '/db.php';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'POST' || $method === 'GET') {
-    $case_id = 0;
+    $patient_id = 0;
 
     if ($method === 'POST') {
-        $case_id = isset($_POST['case_id']) && $_POST['case_id'] !== '' ? (int)$_POST['case_id'] : 0;
+        $patient_id = isset($_POST['patient_id']) && $_POST['patient_id'] !== '' ? (int)$_POST['patient_id'] : 0;
     } else {
-        $case_id = isset($_GET['case_id']) && $_GET['case_id'] !== '' ? (int)$_GET['case_id'] : 0;
+        $patient_id = isset($_GET['patient_id']) && $_GET['patient_id'] !== '' ? (int)$_GET['patient_id'] : 0;
     }
 
-    if ($case_id <= 0) {
-        header('Location: ../views/cases.php?delete_error=invalid');
+    if ($patient_id <= 0) {
+        header('Location: ../views/patients.php?delete_error=invalid');
         exit;
     }
 
@@ -39,14 +27,14 @@ if ($method === 'POST' || $method === 'GET') {
     try {
         $stmt = mysqli_prepare(
             $connect,
-            'DELETE FROM covid_cases WHERE case_id = ?'
+            'DELETE FROM patient WHERE patient_id = ?'
         );
 
         if (!$stmt) {
             throw new Exception('Failed to prepare delete');
         }
 
-        mysqli_stmt_bind_param($stmt, 'i', $case_id);
+        mysqli_stmt_bind_param($stmt, 'i', $patient_id);
 
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception('Failed to execute delete');
@@ -55,13 +43,12 @@ if ($method === 'POST' || $method === 'GET') {
         mysqli_commit($connect);
         mysqli_stmt_close($stmt);
 
-        // For AJAX callers, just return 204 No Content
         if ($method === 'POST') {
             http_response_code(204);
             exit;
         }
 
-        header('Location: ../views/cases.php?deleted=1');
+        header('Location: ../views/patients.php?deleted=1');
         exit;
     } catch (Exception $e) {
         mysqli_rollback($connect);
@@ -71,7 +58,7 @@ if ($method === 'POST' || $method === 'GET') {
             exit;
         }
 
-        header('Location: ../views/cases.php?delete_error=tx');
+        header('Location: ../views/patients.php?delete_error=tx');
         exit;
     }
 }

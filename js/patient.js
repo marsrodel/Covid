@@ -20,6 +20,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const apGender = document.getElementById('apGender');
   const apLocation = document.getElementById('apLocation');
 
+  // Delete Patient confirmation modal
+  const deletePatientModal = document.getElementById('deletePatientModal');
+  const deletePatientBackdrop = document.getElementById('deletePatientBackdrop');
+  const deletePatientClose = document.getElementById('deletePatientClose');
+  const deletePatientCancel = document.getElementById('deletePatientCancel');
+  const deletePatientConfirm = document.getElementById('deletePatientConfirm');
+  let pendingDeletePatientId = null;
+
   if (!patientsCard) {
     return;
   }
@@ -63,6 +71,20 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       closeAddModal();
     });
+  }
+
+  function openDeletePatientModal(patientId) {
+    if (!deletePatientModal) return;
+    pendingDeletePatientId = patientId;
+    deletePatientModal.classList.add('show');
+    deletePatientModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeDeletePatientModal() {
+    if (!deletePatientModal) return;
+    deletePatientModal.classList.remove('show');
+    deletePatientModal.setAttribute('aria-hidden', 'true');
+    pendingDeletePatientId = null;
   }
 
   // Submit Add/Edit Patient form via AJAX so the page does not fully reload
@@ -204,6 +226,63 @@ document.addEventListener('DOMContentLoaded', function () {
     addModal.classList.add('show');
     addModal.setAttribute('aria-hidden', 'false');
   });
+
+  // Delete Patient handler (event delegation)
+  document.addEventListener('click', function (event) {
+    const deleteBtn = event.target.closest('.patients-action-delete');
+    if (!deleteBtn) return;
+
+    const patientId = deleteBtn.getAttribute('data-patient-id');
+    if (!patientId) return;
+
+    openDeletePatientModal(patientId);
+  });
+
+  if (deletePatientBackdrop) {
+    deletePatientBackdrop.addEventListener('click', closeDeletePatientModal);
+  }
+
+  if (deletePatientClose) {
+    deletePatientClose.addEventListener('click', closeDeletePatientModal);
+  }
+
+  if (deletePatientCancel) {
+    deletePatientCancel.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeDeletePatientModal();
+    });
+  }
+
+  if (deletePatientConfirm) {
+    deletePatientConfirm.addEventListener('click', function () {
+      if (!pendingDeletePatientId) {
+        closeDeletePatientModal();
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('patient_id', pendingDeletePatientId);
+
+      fetch('../server/delete_patient.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin',
+      })
+        .then(function (response) {
+          if (!response.ok && response.status !== 204) {
+            throw new Error('Network response was not ok');
+          }
+          const current = new URL(window.location.href);
+          const currentPage = parseInt(current.searchParams.get('page') || '1', 10);
+          const url = buildPatientsUrl(currentPage);
+          closeDeletePatientModal();
+          loadPatients(url);
+        })
+        .catch(function () {
+          window.location.href = '../server/delete_patient.php?patient_id=' + encodeURIComponent(pendingDeletePatientId);
+        });
+    });
+  }
 
   // Intercept clicks on pagination links inside the patients card
   document.addEventListener('click', function (event) {

@@ -44,6 +44,24 @@ require_once __DIR__ . '/../server/patient_queries.php';
       </div>
     </section>
 
+    <!-- Delete Patient Confirmation Modal -->
+    <section class="patient-confirm-modal" id="deletePatientModal" aria-hidden="true">
+      <div class="patient-confirm-backdrop" id="deletePatientBackdrop"></div>
+      <div class="patient-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="deletePatientTitle">
+        <header class="patient-confirm-header">
+          <h2 class="patient-confirm-title" id="deletePatientTitle">Delete patient?</h2>
+          <button type="button" class="patient-confirm-close" id="deletePatientClose" aria-label="Close">×</button>
+        </header>
+        <div class="patient-confirm-body">
+          <p>Are you sure you want to delete this patient? All related cases will also be removed.</p>
+        </div>
+        <footer class="patient-confirm-footer">
+          <button type="button" class="hero-btn hero-btn-ghost" id="deletePatientCancel">Cancel</button>
+          <button type="button" class="hero-btn hero-btn-primary" id="deletePatientConfirm">Delete patient</button>
+        </footer>
+      </div>
+    </section>
+
     <!-- Add Patient Modal -->
     <section class="patient-modal" id="addPatientModal" aria-hidden="true">
       <div class="patient-modal-backdrop" id="addPatientBackdrop"></div>
@@ -188,7 +206,11 @@ require_once __DIR__ . '/../server/patient_queries.php';
                       data-age="<?php echo htmlspecialchars($p['age']); ?>"
                       data-location-id="<?php echo htmlspecialchars($p['location_id'] ?? ''); ?>"
                     >Edit</button>
-                    <button type="button" class="patients-action-btn patients-action-delete">Delete</button>
+                    <button
+                      type="button"
+                      class="patients-action-btn patients-action-delete"
+                      data-patient-id="<?php echo htmlspecialchars($p['patient_id']); ?>"
+                    >Delete</button>
                   </div>
                 </td>
               </tr>
