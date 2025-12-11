@@ -11,7 +11,6 @@ require_once __DIR__ . '/db.php';
 $totals_sql = "SELECT 
     COUNT(*) AS total_cases,
     SUM(CASE WHEN result = 'Positive' THEN 1 ELSE 0 END) AS positive_cases,
-    SUM(CASE WHEN result = 'Negative' THEN 1 ELSE 0 END) AS negative_cases,
     SUM(CASE WHEN severity IN ('Severe', 'Critical') THEN 1 ELSE 0 END) AS severe_critical_cases,
     SUM(CASE WHEN vaccine_id IS NOT NULL AND vaccine_id <> 0 THEN 1 ELSE 0 END) AS vaccinated_cases
 FROM covid_cases";
@@ -20,7 +19,6 @@ $totals_result = mysqli_query($connect, $totals_sql);
 
 $total_cases           = 0;
 $positive_cases        = 0;
-$negative_cases        = 0;
 $severe_critical_cases = 0;
 $vaccinated_cases      = 0;
 
@@ -28,7 +26,6 @@ if ($totals_result && mysqli_num_rows($totals_result) > 0) {
     $row = mysqli_fetch_assoc($totals_result);
     $total_cases           = (int)$row['total_cases'];
     $positive_cases        = (int)$row['positive_cases'];
-    $negative_cases        = (int)$row['negative_cases'];
     $severe_critical_cases = (int)$row['severe_critical_cases'];
     $vaccinated_cases      = (int)$row['vaccinated_cases'];
 }
