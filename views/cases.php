@@ -367,6 +367,12 @@ require_once __DIR__ . '/../server/cases_queries.php';
     </section>
   </main>
 
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>2025 · COVID Analytics · For academic use only</span>
+    </div>
+  </footer>
+
   <script src="../js/cases.js"></script>
 </body>
 </html>

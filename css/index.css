@@ -25,9 +25,8 @@ body {
 }
 
 .container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
+  width: 100%;
+  padding: 0 2em;
 }
 
 .header {
@@ -36,6 +35,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
+  padding: 0 1em;
 }
 
 .header-inner {
@@ -89,6 +89,7 @@ body {
 .nav-link {
   text-decoration: none;
   font-size: 0.9rem;
+  font-weight: 700;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   color: var(--text-muted);
@@ -100,7 +101,7 @@ body {
 }
 
 .main {
-  padding: 2.4rem 0 2.5rem; /* extra top padding so content is not hidden under sticky header */
+  padding: 2.4em 2.5em 1em; /* extra top padding so content is not hidden under sticky header */
 }
 
 .section {
@@ -153,7 +154,7 @@ body {
   padding: 0.45rem 0.95rem;
   border-radius: 999px;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   border: 1px solid transparent;
   transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
@@ -170,7 +171,7 @@ body {
 }
 
 .hero-btn-outline {
-  background: transparent;
+  background: #57aaa3;
   color: #ecfeff;
   border-color: rgba(240, 253, 250, 0.6);
 }
@@ -180,7 +181,7 @@ body {
 }
 
 .hero-btn-ghost {
-  background: transparent;
+  background: #08c6b698;
   color: #e0f2f1;
   border-color: rgba(240, 253, 250, 0.45);
 }
@@ -512,7 +513,7 @@ body {
 }
 
 .growth-table thead {
-  background: #e5f3f5;
+  background: #c1eef5;
 }
 
 .growth-table tbody tr:nth-child(odd) {
