@@ -16,7 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $allowed_results  = ['Positive', 'Negative'];
     $allowed_severity = ['Mild', 'Moderate', 'Severe', 'Critical'];
 
-    if ($case_id <= 0 || $test_date === '' || $patient_id <= 0 || !in_array($result, $allowed_results, true) || !in_array($severity, $allowed_severity, true) || $vaccine_id <= 0 || $lab_id <= 0) {
+    // Note: $vaccine_id may be 0 when the user selects "None" (no vaccine).
+    if ($case_id <= 0 || $test_date === '' || $patient_id <= 0 || !in_array($result, $allowed_results, true) || !in_array($severity, $allowed_severity, true) || $lab_id <= 0) {
         header('Location: ../views/cases.php?edit_error=invalid');
         exit;
     }

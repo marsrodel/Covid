@@ -109,6 +109,7 @@ require_once __DIR__ . '/../server/cases_queries.php';
               <label for="acVaccine" class="cases-filter-label">Vaccine</label>
               <select id="acVaccine" name="vaccine_id" class="patients-select" required>
                 <option value="">Select vaccine</option>
+                <option value="none">None</option>
 <?php if ($vaccine_modal_options && mysqli_num_rows($vaccine_modal_options) > 0): ?>
 <?php while ($vm = mysqli_fetch_assoc($vaccine_modal_options)): ?>
                 <option value="<?php echo htmlspecialchars($vm['vaccine_id']); ?>"><?php echo htmlspecialchars($vm['vaccine_name']); ?></option>
@@ -254,7 +255,7 @@ require_once __DIR__ . '/../server/cases_queries.php';
                       data-patient-id="<?php echo htmlspecialchars($c['patient_id']); ?>"
                       data-result="<?php echo htmlspecialchars($c['result']); ?>"
                       data-severity="<?php echo htmlspecialchars($c['severity']); ?>"
-                      data-vaccine-id="<?php echo htmlspecialchars($c['vaccine_id']); ?>"
+                      data-vaccine-id="<?php echo $c['vaccine_id'] !== null ? htmlspecialchars($c['vaccine_id']) : 'none'; ?>"
                       data-lab-id="<?php echo htmlspecialchars($c['lab_id']); ?>"
                     >Edit</button>
                     <button

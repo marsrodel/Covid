@@ -13,7 +13,7 @@ $totals_sql = "SELECT
     SUM(CASE WHEN result = 'Positive' THEN 1 ELSE 0 END) AS positive_cases,
     SUM(CASE WHEN result = 'Negative' THEN 1 ELSE 0 END) AS negative_cases,
     SUM(CASE WHEN severity IN ('Severe', 'Critical') THEN 1 ELSE 0 END) AS severe_critical_cases,
-    SUM(CASE WHEN vaccine_id IS NOT NULL THEN 1 ELSE 0 END) AS vaccinated_cases
+    SUM(CASE WHEN vaccine_id IS NOT NULL AND vaccine_id <> 0 THEN 1 ELSE 0 END) AS vaccinated_cases
 FROM covid_cases";
 
 $totals_result = mysqli_query($connect, $totals_sql);
