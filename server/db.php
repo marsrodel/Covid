@@ -1,6 +1,4 @@
 <?php
-// Simple database connection file using mysqli.
-// Adjust credentials if your MySQL setup is different.
 
 $host = 'localhost';
 $user = 'root';
