@@ -236,6 +236,17 @@
   border: 1px solid rgba(15, 118, 110, 0.3);
 }
 
+.patient-modal-body .patient-form-error {
+  display: none;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #b91c1c !important;
+}
+
+.patient-modal-body .patient-form-error.show {
+  display: block;
+}
+
 /* Delete Patient confirmation modal */
 
 .patient-confirm-modal {

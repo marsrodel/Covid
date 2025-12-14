@@ -77,6 +77,7 @@ require_once __DIR__ . '/../server/patient_queries.php';
         </header>
         <form class="patient-modal-body" method="post" action="../server/add_patient_queries.php" id="patientForm">
           <input type="hidden" name="patient_id" id="apPatientId" value="">
+          <div id="patientFormError" class="patient-form-error" aria-live="polite"></div>
           <div class="patient-modal-grid">
             <div class="patient-field-group">
               <label for="apFirstName" class="patients-filter-label">First name</label>

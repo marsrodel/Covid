@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const apAge = document.getElementById('apAge');
   const apGender = document.getElementById('apGender');
   const apLocation = document.getElementById('apLocation');
+  const patientFormError = document.getElementById('patientFormError');
 
   // Delete Patient confirmation modal
   const deletePatientModal = document.getElementById('deletePatientModal');
@@ -30,6 +31,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!patientsCard) {
     return;
+  }
+
+  // Helper to capitalize the first letter of each word while typing, preserving spaces
+  function autoCapitalizeWords(inputEl) {
+    if (!inputEl) return;
+    inputEl.addEventListener('input', function () {
+      const original = inputEl.value;
+      const transformed = original.replace(/\b(\w)(\w*)/g, function (_, first, rest) {
+        return first.toUpperCase() + rest.toLowerCase();
+      });
+      if (transformed !== original) {
+        inputEl.value = transformed;
+      }
+    });
   }
 
   function openAddModal() {
@@ -44,6 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (apAge) apAge.value = '';
     if (apGender) apGender.value = '';
     if (apLocation) apLocation.value = '';
+    if (patientFormError) {
+      patientFormError.textContent = '';
+      patientFormError.classList.remove('show');
+    }
     addModal.classList.add('show');
     addModal.setAttribute('aria-hidden', 'false');
   }
@@ -57,6 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
   if (openAddBtn) {
     openAddBtn.addEventListener('click', openAddModal);
   }
+
+  // Attach live capitalization to first and last name fields
+  autoCapitalizeWords(apFirst);
+  autoCapitalizeWords(apLast);
 
   if (addBackdrop) {
     addBackdrop.addEventListener('click', closeAddModal);
@@ -99,11 +122,41 @@ document.addEventListener('DOMContentLoaded', function () {
         method: 'POST',
         body: formData,
         credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
       })
         .then(function (response) {
+          const contentType = response.headers.get('Content-Type') || '';
+
+          if (contentType.indexOf('application/json') !== -1) {
+            return response.json().then(function (data) {
+              return { httpOk: response.ok, data: data };
+            });
+          }
+
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
+
+          return { httpOk: true, data: null };
+        })
+        .then(function (result) {
+          if (result.data && result.data.success === false) {
+            if (patientFormError) {
+              patientFormError.textContent = result.data.error || 'Unable to save patient.';
+              patientFormError.classList.add('show');
+            } else {
+              alert(result.data.error || 'Unable to save patient.');
+            }
+            return;
+          }
+
+          if (patientFormError) {
+            patientFormError.textContent = '';
+            patientFormError.classList.remove('show');
+          }
+
           // After successful save, refresh patients list on current page
           const current = new URL(window.location.href);
           const currentPage = parseInt(current.searchParams.get('page') || '1', 10);
@@ -222,6 +275,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (apAge) apAge.value = age;
     if (apGender) apGender.value = gender;
     if (apLocation) apLocation.value = locId;
+
+    if (patientFormError) {
+      patientFormError.textContent = '';
+      patientFormError.classList.remove('show');
+    }
 
     addModal.classList.add('show');
     addModal.setAttribute('aria-hidden', 'false');
